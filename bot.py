@@ -3,13 +3,10 @@ import os
 import discord
 
 from discord.ext import commands
-from dotenv import load_dotenv
+from config import DISCORD_TOKEN
 
-load_dotenv()
 
-TOKEN = os.getenv("DISCORD_TOKEN")
-
-if not TOKEN :
+if not DISCORD_TOKEN :
     raise RuntimeError(
         "DISCORD_TOKEN not found in file .env"
     )
@@ -46,4 +43,4 @@ async def on_ready():
         "ID of bot : {bot.user.id}"
     )
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)
