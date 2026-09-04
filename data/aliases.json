@@ -1,0 +1,73 @@
+{
+    "groups" :{ 
+        
+        "bts" : {
+            "canonical":"BTS",
+            "aliases" : [ 
+                "bts",
+                "bangtan", 
+                "bangtan boys", 
+                "bangtan sonyeondan", 
+                "방탄소년단"
+            ]
+        },
+
+        "blackpink":{ 
+            "canonical": "BLACKPINK",
+            "aliases":[
+                "blackpink",
+                "black pink",
+                "bp",
+                "BlackPink",
+                "블랙핑크"
+            ]
+        }, 
+
+        "stray-kids": {
+            "canonical": "Stray Kids",
+            "aliases": [
+                "stray kids", 
+                "straykids", 
+                "skz",
+                "스트레이 키즈"
+            ]
+        },
+
+        "illit": {
+            "canonical": "ILLIT", 
+            "aliases": [
+                "illit",
+                "아일릿"
+            ]
+        },
+
+        "le-sserrafim": {
+            "canonical": "LE SSERAFIM",
+            "aliases" : [
+                "le sserafim", 
+                "lesserafim",
+                "lsf",
+                "르세라핌"
+            ]
+        },
+
+        "ateez":{
+            "canonical" : "ATEEZ", 
+            "aliases" : [
+                "ateez", 
+                "에이티즈"
+            ]
+        },
+
+        "enhypen": {
+            "canonical": "ENHYPEN",
+            "aliases": [
+                "enhypen",
+                "en-",
+                "엔하이픈"
+            ]
+        }
+    },
+
+    "members":{}
+}
