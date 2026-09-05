@@ -21,14 +21,13 @@ class KpopBot(commands.Bot):
             intents=intents
         )
 
-        async def setup_hook(self): 
-            await self.load_extension(
-                "commands.groupe"
-            )
+    async def setup_hook(self): 
+        await self.load_extension(
+            "commands.groupe"
+        )
+        await self.tree.sync()
 
-            await self.tree.sync()
-
-            print('Discord Command synchronised')
+        print('Discord Command synchronised')
 
 bot =  KpopBot()
 
@@ -36,11 +35,11 @@ bot =  KpopBot()
 async def on_ready(): 
 
     print(
-        "Connected as {bot.user}"
+        f"Connected as {bot.user}"
     )
 
     print( 
-        "ID of bot : {bot.user.id}"
+        f"ID of bot : {bot.user.id}"
     )
 
 bot.run(DISCORD_TOKEN)
