@@ -4,7 +4,7 @@ from services.musicbrainz import search_group
 
 async def main(): 
     
-    result = await search_group("KATSEYE")
+    result = await search_group("SKZ")
 
     if result is None : 
         print("Auncun group trouvé")

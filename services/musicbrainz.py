@@ -1,10 +1,27 @@
-import aiohttp 
+import aiohttp
+import asyncio
 
 from config import MUSICBRAINZ_API_URL
+
+class MusicBrainzError(Exception): 
+    """
+    Exception levé lorsque MusicBrainz 
+    est indisponible ou rencontre des erreurs
+    """
+    pass
+
 
 HEADER = {
     "User-Agent": "KpopBot/0.1 (https://github.com/NgixBP/BotDiscordKpop)"
 }
+
+async def wait_before_new_attempt(delay: int = 2):
+    """
+    Attente avant nouvelle tentative de la requetes
+    """
+
+    print(f"New attempt in {delay} seconds...")
+    await asyncio.sleep(delay)
 
 
 
@@ -22,50 +39,75 @@ async def search_group(group_name: str) -> dict | None:
         "limit": 5
     }
 
+    #Timeout de la requête 
     timeout = aiohttp.ClientTimeout(total=10)
 
-    try: 
-        async with aiohttp.ClientSession(
-            headers=HEADER,
-            timeout=timeout
-        ) as session: 
+    #Nombre max de tentatives de requête par commands
+    max_attempts = 2
 
-            async with session.get(
-                url,
-                params=params
-            ) as response: 
-                
-                if response.status != 200: 
-                    print(
-                        f"!!!!!!!!!! MusicBrainz EROOR : HTTP {response.status}!!!!!!!!!!!!!!!!!"
-                    )
-                   
-                    return None
-
-                data = await response.json()
-    
-    # NetWork Error MusicBrainz 
-    # Impossible to Connect
-    except aiohttp.ClientError as error: 
-
+    for attempt in range(1, max_attempts + 1): 
         print(
-            f"!!!!!!!!!!!!!!!NetWork MusicBrain ERRROR : {error} !!!!!!!!!!!!!!!!!!!!!!!"
+            f"MusicBrainz - attempts {attempt}/{max_attempts} for {group_name}"
         )
+        try: 
+            async with aiohttp.ClientSession(
+                headers=HEADER,
+                timeout=timeout
+            ) as session: 
 
-        return None
+                async with session.get(
+                    url,
+                    params=params
+                ) as response: 
+                    
+                    if response.status != 200: 
+                        print(
+                            f"!!!!!!!!!! MusicBrainz EROOR : HTTP {response.status}!!!!!!!!!!!!!!!!!"
+                        )
+
+                        if attempt < max_attempts: 
+                            await wait_before_new_attempt()
+                            continue 
+                        break
+
+                    data = await response.json()
         
-    #Timeout 
-    except TimeoutError: 
+        # NetWork Error MusicBrainz 
+        # Impossible to Connect
+        except aiohttp.ClientError as error: 
 
-        print(
-            "MusicBrainz not responding"
-        )
+            print(
+                f"!!!!!!!!!!!!!!!NetWork MusicBrain ERRROR : {error} !!!!!!!!!!!!!!!!!!!!!!!"
+            )
 
-        return None
-    
-    artists = data.get("artists",[])
+            # Wait de secondes avant de recommencer.
+            if attempt < max_attempts:
+                await wait_before_new_attempt()
+                continue
+            break
+            
+        #Timeout 
+        except TimeoutError: 
 
-    if not artists: 
-        return None
+            print(
+                "MusicBrainz not responding"
+            )
 
-    return artists[0]
+            # Wait de secondes avant de recommencer.
+            if attempt < max_attempts:
+                await wait_before_new_attempt()
+                continue 
+            break
+
+        #print("Réponse MusicBrainz :", data)
+        artists = data.get("artists",[])
+
+        if not artists: 
+            return None
+
+        return artists[0]
+
+    # Echec des tentatives
+    raise MusicBrainzError(
+        f"MusicBrainz is out of order after {max_attempts} attempts"
+    )

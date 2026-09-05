@@ -4,12 +4,12 @@ from discord import app_commands
 
 from discord.ext import commands
 
-from services.musicbrainz import search_group 
+from services.musicbrainz import search_group, MusicBrainzError
 
 class Groupe(commands.Cog): 
 
         def __init__(self, bot: commands.Bot): 
-            self.bot =bot 
+            self.bot = bot 
 
         @app_commands .command(
             name="groupe", 
@@ -30,14 +30,29 @@ class Groupe(commands.Cog):
             les informations trouvées.
             """
             print(f"Commande /groupe reçue : {groupe}")
+
             await interaction.response.defer()
+
             print("Recherche MusicBrainz...")
-            result = await search_group(groupe)
-            print(f"Résultat MusicBrainz : {result}")
+            try : 
+                result = await search_group(groupe)
+            except MusicBrainzError as error: 
+                print(
+                    f"MusicBrainz Error : {error}"
+                )
+            
+                await interaction.followup.send(
+                    "⚠️ MusicBrainz est temporairement indisponible. "
+                    "Réessaie dans quelques instants."
+                )
+                return
+
+            #print(f"Résultat MusicBrainz : {result}")
+
             if result is None :
                 
                 await interaction .followup.send(
-                    f"Aucun groupe trouvé pour **{groupe}**"
+                    f"❌Aucun groupe trouvé pour **{groupe}**"
                 )
 
                 return
